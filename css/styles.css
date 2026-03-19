@@ -72,8 +72,30 @@ main {
     background: white;
 }
 
+.options-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-right: 1.5rem;
+    align-items: flex-start;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.checkbox-label input {
+    width: 1rem;
+    height: 1rem;
+}
+
 .action-group {
-    align-items: flex-end;
+    align-items: center;
     justify-content: flex-end;
 }
 

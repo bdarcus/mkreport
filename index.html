@@ -34,6 +34,14 @@
             </div>
             
             <div class="control-group action-group">
+                <div class="options-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="compact-toggle"> Compact Summary Table
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="group-semester-toggle"> Group by Semester
+                    </label>
+                </div>
                 <button id="generate-btn" class="primary-btn">Generate Report</button>
             </div>
         </section>
@@ -51,12 +59,15 @@
         </section>
     </main>
 
-    <!-- Templates -->
+    <!-- Detailed Template -->
     <script id="annual-report-template" type="x-tmpl-mustache">
 # Teaching Evaluation Summary
 
+{{#semesters}}
+# Term: {{term}}
+
 {{#evaluations}}
-## Course: {{courseName}} ({{term}})
+## Course: {{courseName}}
 
 **Metrics**
 *   **Total Enrollments:** {{enrollments}}
@@ -77,6 +88,27 @@
 
 ---
 {{/evaluations}}
+{{/semesters}}
+    </script>
+
+    <!-- Compact Template -->
+    <script id="compact-report-template" type="x-tmpl-mustache">
+# Teaching Evaluation Summary (Compact)
+
+{{#semesters}}
+## Term: {{term}}
+
+| Course | Enrollments | Response Rate | Key Question 1* | Key Question 2** |
+| :--- | :---: | :---: | :---: | :---: |
+{{#evaluations}}
+| {{courseName}} | {{enrollments}} | {{responseRate}} | {{keyMean1}} | {{keyMean2}} |
+{{/evaluations}}
+
+*\*Key Question 1: Upon reflection, this instructor is an effective teacher.*
+*\*\*Key Question 2: On a scale of 1-10, how effective are the teaching methods...*
+
+---
+{{/semesters}}
     </script>
 
     <!-- App Logic -->
