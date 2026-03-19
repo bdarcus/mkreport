@@ -28,15 +28,13 @@
                 <label for="parser-select">Select Report Format:</label>
                 <select id="parser-select">
                     <option value="default">Default Format</option>
+                    <option value="hierarchical">Hierarchical Format (2025+)</option>
                     <!-- Future parsers can be added here -->
                 </select>
             </div>
             
-            <div class="control-group">
-                <label for="template-select">Select Template:</label>
-                <select id="template-select">
-                    <option value="annual-report">Annual Report Template</option>
-                </select>
+            <div class="control-group action-group">
+                <button id="generate-btn" class="primary-btn">Generate Report</button>
             </div>
         </section>
 

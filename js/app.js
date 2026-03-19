@@ -1,14 +1,17 @@
 // Main App Logic
 
 import { parseExcel as defaultParser } from './parsers/default.js';
+import { parseExcel as hierarchicalParser } from './parsers/hierarchical.js';
 
 const PARSERS = {
-    'default': defaultParser
+    'default': defaultParser,
+    'hierarchical': hierarchicalParser
 };
 
 document.addEventListener('DOMContentLoaded', () => {
     const fileInput = document.getElementById('excel-upload');
     const parserSelect = document.getElementById('parser-select');
+    const generateBtn = document.getElementById('generate-btn');
     const reportOutput = document.getElementById('report-output');
     const errorMessage = document.getElementById('error-message');
     const templateSource = document.getElementById('annual-report-template').innerHTML;
@@ -24,12 +27,16 @@ document.addEventListener('DOMContentLoaded', () => {
         errorMessage.classList.add('hidden');
     }
 
-    async function handleFileUpload(event) {
-        const file = event.target.files[0];
-        if (!file) return;
+    async function handleGenerate() {
+        const file = fileInput.files[0];
+        if (!file) {
+            showError("Please select an Excel file first.");
+            return;
+        }
 
         clearError();
         reportOutput.innerHTML = '<p class="placeholder">Processing your report...</p>';
+        generateBtn.disabled = true;
 
         try {
             // Read file as ArrayBuffer
@@ -46,6 +53,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Parse data
             const data = parseFn(buffer);
 
+            if (!data.evaluations || data.evaluations.length === 0) {
+                throw new Error("No evaluation data found. Please check if you selected the correct 'Report Format'.");
+            }
+
             // Render Markdown using Mustache
             const markdownText = Mustache.render(templateSource, data);
 
@@ -58,6 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Error generating report:", error);
             showError(`Error processing report: ${error.message}`);
+        } finally {
+            generateBtn.disabled = false;
         }
     }
 
@@ -71,5 +84,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Attach event listeners
-    fileInput.addEventListener('change', handleFileUpload);
+    generateBtn.addEventListener('click', handleGenerate);
+    
+    // Optional: auto-clear error when a new file is picked
+    fileInput.addEventListener('change', clearError);
 });
