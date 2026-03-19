@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teaching Evaluation Report Generator</title>
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mustache@4.2.0/mustache.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Teaching Evaluation Report Generator</h1>
+        <p>100% private, client-side processing. Your data never leaves your browser.</p>
+    </header>
+
+    <main>
+        <section class="controls">
+            <div class="control-group">
+                <label for="excel-upload">Upload Evaluation Excel:</label>
+                <input type="file" id="excel-upload" accept=".xlsx, .xls">
+            </div>
+            
+            <div class="control-group">
+                <label for="parser-select">Select Report Format:</label>
+                <select id="parser-select">
+                    <option value="default">Default Format</option>
+                    <!-- Future parsers can be added here -->
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="template-select">Select Template:</label>
+                <select id="template-select">
+                    <option value="annual-report">Annual Report Template</option>
+                </select>
+            </div>
+        </section>
+
+        <section id="error-message" class="error-message hidden"></section>
+
+        <section class="output-container">
+            <h2>Generated Report</h2>
+            <div id="report-output" class="report-output">
+                <p class="placeholder">Upload an Excel file to generate your report.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Templates -->
+    <script id="annual-report-template" type="x-tmpl-mustache">
+# Teaching Evaluation Summary
+
+**Course Information**
+
+{{#evaluations}}
+## Course: {{courseName}} ({{term}})
+
+### Evaluation Results
+
+| Question | Mean Score | Responses |
+| :--- | :---: | :---: |
+{{#questions}}
+| {{{questionText}}} | {{mean}} | {{responses}} |
+{{/questions}}
+
+### Qualitative Feedback
+{{#comments}}
+*   "{{.}}"
+{{/comments}}
+
+---
+{{/evaluations}}
+    </script>
+
+    <!-- App Logic -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
