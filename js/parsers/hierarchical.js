@@ -26,6 +26,7 @@ window.Parsers.hierarchical = function parseExcel(dataBuffer) {
             if (!row || row.length === 0) continue;
 
             // Heuristic for Course row: [String, empty/null, String/Number]
+            // Usually looks like: ["Course Name", null, "202610"]
             if (row.length >= 3 && typeof row[0] === 'string' && !row[1] && row[2]) {
                 currentCourse = {
                     courseName: row[0].trim(),
@@ -63,13 +64,22 @@ window.Parsers.hierarchical = function parseExcel(dataBuffer) {
                     univMean: "-"
                 };
 
-                // Look ahead for comparative means
+                // Look ahead for comparative means (Dept, School, Univ)
+                // These rows have the first cell empty (null/undefined)
                 let j = i + 1;
-                while (j < rawData.length && j < i + 5) {
+                while (j < rawData.length && j < i + 10) { // Check up to 10 rows just in case
                     const nextRow = rawData[j];
-                    if (!nextRow || nextRow[0] !== null) break;
-                    
-                    const label = nextRow[1];
+                    if (!nextRow || nextRow.length < 2) {
+                        j++;
+                        continue;
+                    }
+
+                    // If we find a new question or a new course, stop looking
+                    if (nextRow[0] && typeof nextRow[0] === 'string' && nextRow[0].trim() !== "") {
+                        break; 
+                    }
+
+                    const label = nextRow[1] ? nextRow[1].toString().trim() : "";
                     const value = parseFloat(nextRow[2]);
 
                     if (label === "Dept Mean") {
@@ -78,21 +88,32 @@ window.Parsers.hierarchical = function parseExcel(dataBuffer) {
                         if (!isNaN(value)) questionObj.schoolMean = value.toFixed(2);
                     } else if (label === "Univ Mean") {
                         if (!isNaN(value)) questionObj.univMean = value.toFixed(2);
-                    } else {
-                        break; // Not a mean label, don't consume it
+                    } else if (label === "Total Enrollments" || label === "Response Rate") {
+                        // These are course-level, stop mean lookup
+                        break;
+                    } else if (label === "Crs Mean") {
+                        // Found next question, stop
+                        break;
                     }
+                    
                     j++;
                 }
 
                 currentCourse.questions.push(questionObj);
-                i = j - 1; // Advance main loop to last consumed mean row
+                // We DON'T advance 'i' here because course-level metrics might be after the means 
+                // and we want the main loop to see them. 
+                // However, we want to skip the mean rows we just processed.
+                // But wait, if we don't advance 'i', the main loop will hit Dept Mean rows.
+                // We need to advance 'i' to the last consumed mean row.
+                i = j - 1;
                 continue;
             }
 
-            // Capture response rate and enrollments
-            if (row[1] === "Total Enrollments") {
+            // Capture response rate and enrollments (usually at the end of the course block)
+            const label = row[1] ? row[1].toString().trim() : "";
+            if (label === "Total Enrollments") {
                 currentCourse.enrollments = row[2];
-            } else if (row[1] === "Response Rate") {
+            } else if (label === "Response Rate") {
                 const rate = parseFloat(row[2]);
                 currentCourse.responseRate = isNaN(rate) ? row[2] : (rate * 100).toFixed(0) + "%";
             }
