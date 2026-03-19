@@ -65,7 +65,6 @@
 {{#semesters}}
 {{#isGrouped}}
 # Term: {{term}}
-
 {{/isGrouped}}
 {{#evaluations}}
 ## Course: {{courseName}} ({{term}})
@@ -87,11 +86,8 @@
 *   "{{.}}"
 {{/comments}}
 
-<br/>
-
-{{/evaluations}}
 ---
-
+{{/evaluations}}
 {{/semesters}}
     </script>
 
@@ -99,19 +95,18 @@
     <script id="compact-report-template" type="x-tmpl-mustache">
 # Teaching Evaluation Summary (Combined Table)
 
-{{#semesters}}
-{{#isGrouped}}
-## Term: {{term}}
-
-{{/isGrouped}}
 | Item | Crs Mean | Dept Mean | School Mean | Univ Mean |
 | :--- | :---: | :---: | :---: | :---: |
-{{#evaluations}}| **{{courseName}}** (Enr: {{enrollments}}, RR: {{responseRate}}) | | | | |
-{{#questions}}| {{{questionText}}} | {{mean}} | {{deptMean}} | {{schoolMean}} | {{univMean}} |
-{{/questions}}{{/evaluations}}
-
----
-
+{{#semesters}}
+{{#isGrouped}}
+| **Term: {{term}}** | | | | |
+{{/isGrouped}}
+{{#evaluations}}
+| **{{courseName}}** ({{term}}, Enr: {{enrollments}}, RR: {{responseRate}}) | | | | |
+{{#questions}}
+| {{{questionText}}} | {{mean}} | {{deptMean}} | {{schoolMean}} | {{univMean}} |
+{{/questions}}
+{{/evaluations}}
 {{/semesters}}
     </script>
 
