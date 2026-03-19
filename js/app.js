@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const fileInput = document.getElementById('excel-upload');
     const parserSelect = document.getElementById('parser-select');
     const generateBtn = document.getElementById('generate-btn');
+    const copyBtn = document.getElementById('copy-btn');
     const reportOutput = document.getElementById('report-output');
     const errorMessage = document.getElementById('error-message');
     const templateSource = document.getElementById('annual-report-template').innerHTML;
@@ -19,7 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function showError(message) {
         errorMessage.textContent = message;
         errorMessage.classList.remove('hidden');
-        reportOutput.innerHTML = '<p class="placeholder">Upload an Excel file to generate your report.</p>';
+        copyBtn.classList.add('hidden');
+        reportOutput.innerHTML = '<p class="placeholder">Upload an Excel file and click "Generate Report" to see the results.</p>';
     }
 
     function clearError() {
@@ -37,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearError();
         reportOutput.innerHTML = '<p class="placeholder">Processing your report...</p>';
         generateBtn.disabled = true;
+        copyBtn.classList.add('hidden');
 
         try {
             // Read file as ArrayBuffer
@@ -65,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Display
             reportOutput.innerHTML = htmlText;
+            copyBtn.classList.remove('hidden');
 
         } catch (error) {
             console.error("Error generating report:", error);
@@ -72,6 +76,22 @@ document.addEventListener('DOMContentLoaded', () => {
         } finally {
             generateBtn.disabled = false;
         }
+    }
+
+    function handleCopy() {
+        const html = reportOutput.innerHTML;
+        navigator.clipboard.writeText(html).then(() => {
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = 'Copied!';
+            copyBtn.classList.add('success');
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+                copyBtn.classList.remove('success');
+            }, 2000);
+        }).catch(err => {
+            console.error('Could not copy text: ', err);
+            alert('Failed to copy text to clipboard.');
+        });
     }
 
     function readFileAsArrayBuffer(file) {
@@ -85,7 +105,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Attach event listeners
     generateBtn.addEventListener('click', handleGenerate);
+    copyBtn.addEventListener('click', handleCopy);
     
-    // Optional: auto-clear error when a new file is picked
-    fileInput.addEventListener('change', clearError);
+    // Auto-clear error and hide copy button when a new file or format is picked
+    fileInput.addEventListener('change', () => {
+        clearError();
+        copyBtn.classList.add('hidden');
+    });
+    parserSelect.addEventListener('change', () => {
+        clearError();
+        copyBtn.classList.add('hidden');
+    });
 });

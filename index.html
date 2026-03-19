@@ -41,9 +41,12 @@
         <section id="error-message" class="error-message hidden"></section>
 
         <section class="output-container">
-            <h2>Generated Report</h2>
+            <div class="output-header">
+                <h2>Generated Report</h2>
+                <button id="copy-btn" class="secondary-btn hidden">Copy HTML to Clipboard</button>
+            </div>
             <div id="report-output" class="report-output">
-                <p class="placeholder">Upload an Excel file to generate your report.</p>
+                <p class="placeholder">Upload an Excel file and click "Generate Report" to see the results.</p>
             </div>
         </section>
     </main>
