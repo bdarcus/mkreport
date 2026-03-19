@@ -175,9 +175,14 @@ main {
     text-align: left;
 }
 
-.report-output th {
-    background-color: #f1f3f5;
+.report-output th:nth-child(2), .report-output td:nth-child(2) {
+    background-color: #fcfcfc;
     font-weight: 600;
+}
+
+.report-output th:nth-child(2) {
+    background-color: #eef2f7;
+    border-bottom: 2px solid var(--primary-color);
 }
 
 /* Highlighting styles */
