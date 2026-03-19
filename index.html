@@ -29,7 +29,6 @@
                 <select id="parser-select">
                     <option value="default">Default Format</option>
                     <option value="hierarchical">Hierarchical Format (2025+)</option>
-                    <!-- Future parsers can be added here -->
                 </select>
             </div>
             
@@ -64,10 +63,12 @@
 # Teaching Evaluation Summary
 
 {{#semesters}}
+{{#isGrouped}}
 # Term: {{term}}
+{{/isGrouped}}
 
 {{#evaluations}}
-## Course: {{courseName}}
+## Course: {{courseName}} ({{term}})
 
 **Metrics**
 *   **Total Enrollments:** {{enrollments}}
@@ -96,12 +97,14 @@
 # Teaching Evaluation Summary (Compact)
 
 {{#semesters}}
+{{#isGrouped}}
 ## Term: {{term}}
+{{/isGrouped}}
 
-| Course | Enrollments | Response Rate | Key Question 1* | Key Question 2** |
+| Course (Term) | Enrollments | Response Rate | Key Question 1* | Key Question 2** |
 | :--- | :---: | :---: | :---: | :---: |
 {{#evaluations}}
-| {{courseName}} | {{enrollments}} | {{responseRate}} | {{keyMean1}} | {{keyMean2}} |
+| {{courseName}} ({{term}}) | {{enrollments}} | {{responseRate}} | {{keyMean1}} | {{keyMean2}} |
 {{/evaluations}}
 
 *\*Key Question 1: Upon reflection, this instructor is an effective teacher.*

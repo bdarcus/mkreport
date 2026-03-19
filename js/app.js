@@ -46,18 +46,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const rawData = parseFn(buffer);
 
             if (!rawData.evaluations || rawData.evaluations.length === 0) {
-                throw new Error("No evaluation data found.");
+                throw new Error("No evaluation data found. Check your report format.");
             }
 
             // Transform Data based on options
-            const processedData = transformData(rawData.evaluations);
+            const data = transformData(rawData.evaluations);
 
             // Select Template
             const templateId = compactToggle.checked ? 'compact-report-template' : 'annual-report-template';
-            const templateSource = document.getElementById(templateId).innerHTML;
+            const templateElement = document.getElementById(templateId);
+            if (!templateElement) {
+                throw new Error(`Template '${templateId}' not found.`);
+            }
+            const templateSource = templateElement.innerHTML;
 
             // Render Markdown using Mustache
-            const markdownText = Mustache.render(templateSource, processedData);
+            const markdownText = Mustache.render(templateSource, data);
 
             // Convert Markdown to HTML using Marked
             const htmlText = marked.parse(markdownText);
@@ -68,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error("Error generating report:", error);
-            showError(`Error processing report: ${error.message}`);
+            showError(`Error: ${error.message}`);
         } finally {
             generateBtn.disabled = false;
         }
@@ -77,14 +81,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function transformData(evaluations) {
         // Prepare extra fields for compact mode
         evaluations.forEach(eval => {
-            // Find key summary questions for the compact table
             const key1 = eval.questions.find(q => q.questionText.includes("Upon reflection"));
             const key2 = eval.questions.find(q => q.questionText.includes("On a scale of 1-10"));
             eval.keyMean1 = key1 ? key1.mean : "-";
             eval.keyMean2 = key2 ? key2.mean : "-";
         });
 
-        if (groupSemesterToggle.checked) {
+        const isGrouped = groupSemesterToggle.checked;
+        
+        if (isGrouped) {
             const semestersMap = new Map();
             evaluations.forEach(eval => {
                 if (!semestersMap.has(eval.term)) {
@@ -98,19 +103,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 evaluations: evals
             }));
             
-            // Sort semesters (descending)
             semesters.sort((a, b) => b.term.localeCompare(a.term));
             
-            return { semesters };
+            return { 
+                semesters,
+                isGrouped: true
+            };
         } else {
-            // If not grouped, we still wrap in a single "semesters" entry for template consistency
-            // or we could handle it differently in templates. 
-            // Let's go with one "Semester: All Courses" entry.
             return {
                 semesters: [{
                     term: "All Courses",
                     evaluations: evaluations
-                }]
+                }],
+                isGrouped: false
             };
         }
     }
@@ -138,12 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Attach event listeners
     generateBtn.addEventListener('click', handleGenerate);
     copyBtn.addEventListener('click', handleCopy);
-    
-    fileInput.addEventListener('change', () => {
-        clearError();
-        copyBtn.classList.add('hidden');
-    });
+    fileInput.addEventListener('change', clearError);
 });
