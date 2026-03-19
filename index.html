@@ -101,15 +101,17 @@
 ## Term: {{term}}
 {{/isGrouped}}
 
-| Course (Term) | Enrollments | Response Rate | Key Question 1* | Key Question 2** |
-| :--- | :---: | :---: | :---: | :---: |
 {{#evaluations}}
-| {{courseName}} ({{term}}) | {{enrollments}} | {{responseRate}} | {{keyMean1}} | {{keyMean2}} |
+### {{courseName}} ({{term}})
+*Enrollments: {{enrollments}} | Response Rate: {{responseRate}}*
+
+| Question | Crs Mean | Dept Mean | School Mean | Univ Mean |
+| :--- | :---: | :---: | :---: | :---: |
+{{#questions}}
+| {{{questionText}}} | {{mean}} | {{deptMean}} | {{schoolMean}} | {{univMean}} |
+{{/questions}}
+
 {{/evaluations}}
-
-*\*Key Question 1: Upon reflection, this instructor is an effective teacher.*
-*\*\*Key Question 2: On a scale of 1-10, how effective are the teaching methods...*
-
 ---
 {{/semesters}}
     </script>
