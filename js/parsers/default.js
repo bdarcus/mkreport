@@ -59,9 +59,10 @@ window.Parsers.default = function parseExcel(dataBuffer) {
             const evalData = evaluationsMap.get(evalKey);
 
             if (rawQuestion) {
-                let formattedQuestion = rawQuestion;
-                const isHighlight = HIGHLIGHT_QUESTIONS.some(q => rawQuestion.includes(q));
-                if (isHighlight) formattedQuestion = `<strong class="highlight-question">${rawQuestion}</strong>`;
+                const cleanQuestion = rawQuestion.replace(/\n/g, ' ').trim();
+                let formattedQuestion = cleanQuestion;
+                const isHighlight = HIGHLIGHT_QUESTIONS.some(q => cleanQuestion.includes(q));
+                if (isHighlight) formattedQuestion = `<strong class="highlight-question">${cleanQuestion}</strong>`;
 
                 evalData.questions.push({
                     questionText: formattedQuestion,

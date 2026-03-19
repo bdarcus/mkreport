@@ -43,8 +43,8 @@ window.Parsers.hierarchical = function parseExcel(dataBuffer) {
             if (!currentCourse) continue;
 
             // Heuristic for Question row: [String, "Crs Mean", Number]
-            if (row.length >= 3 && typeof row[0] === 'string' && row[1] === "Crs Mean") {
-                const rawQuestion = row[0].trim();
+            if (currentCourse && row.length >= 3 && typeof row[0] === 'string' && row[1] === "Crs Mean") {
+                const rawQuestion = row[0].replace(/\n/g, ' ').trim();
                 const meanScore = parseFloat(row[2]);
 
                 if (isNaN(meanScore)) continue;

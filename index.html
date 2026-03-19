@@ -65,8 +65,8 @@
 {{#semesters}}
 {{#isGrouped}}
 # Term: {{term}}
-{{/isGrouped}}
 
+{{/isGrouped}}
 {{#evaluations}}
 ## Course: {{courseName}} ({{term}})
 
@@ -87,8 +87,11 @@
 *   "{{.}}"
 {{/comments}}
 
----
+<br/>
+
 {{/evaluations}}
+---
+
 {{/semesters}}
     </script>
 
@@ -99,18 +102,16 @@
 {{#semesters}}
 {{#isGrouped}}
 ## Term: {{term}}
-{{/isGrouped}}
 
+{{/isGrouped}}
 | Item | Crs Mean | Dept Mean | School Mean | Univ Mean |
 | :--- | :---: | :---: | :---: | :---: |
-{{#evaluations}}
-| **{{courseName}}** (Enr: {{enrollments}}, RR: {{responseRate}}) | | | | |
-{{#questions}}
-| {{{questionText}}} | {{mean}} | {{deptMean}} | {{schoolMean}} | {{univMean}} |
-{{/questions}}
-{{/evaluations}}
+{{#evaluations}}| **{{courseName}}** (Enr: {{enrollments}}, RR: {{responseRate}}) | | | | |
+{{#questions}}| {{{questionText}}} | {{mean}} | {{deptMean}} | {{schoolMean}} | {{univMean}} |
+{{/questions}}{{/evaluations}}
 
 ---
+
 {{/semesters}}
     </script>
 
