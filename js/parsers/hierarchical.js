@@ -1,19 +1,13 @@
-// Hierarchical Excel Parser Module
+// Hierarchical Excel Parser (Global Version)
 
-const HIGHLIGHT_QUESTIONS = [
-    "Upon reflection, this instructor is an effective teacher.",
-    "On a scale of 1-10, how effective are the teaching methods of this faculty member?"
-];
+window.Parsers = window.Parsers || {};
 
-/**
- * Parses the Hierarchical Excel format.
- * Structure:
- * [Course Name, null, Term]
- * [Question, "Crs Mean", value]
- * [null, "Dept Mean", value]
- * ...
- */
-export function parseExcel(dataBuffer) {
+window.Parsers.hierarchical = function parseExcel(dataBuffer) {
+    const HIGHLIGHT_QUESTIONS = [
+        "Upon reflection, this instructor is an effective teacher.",
+        "On a scale of 1-10, how effective are the teaching methods of this faculty member?"
+    ];
+
     try {
         const workbook = XLSX.read(dataBuffer, { type: 'array' });
         const firstSheetName = workbook.SheetNames[0];
@@ -31,10 +25,10 @@ export function parseExcel(dataBuffer) {
             const row = rawData[i];
             if (!row || row.length === 0) continue;
 
-            // Heuristic for Course row: [String, null, String/Number]
-            if (row.length >= 3 && typeof row[0] === 'string' && row[1] === null && row[2] !== null) {
+            // Heuristic for Course row: [String, empty/null, String/Number]
+            if (row.length >= 3 && typeof row[0] === 'string' && !row[1] && row[2]) {
                 currentCourse = {
-                    courseName: row[0],
+                    courseName: row[0].trim(),
                     term: row[2].toString(),
                     questions: [],
                     comments: []
@@ -46,7 +40,9 @@ export function parseExcel(dataBuffer) {
             // Heuristic for Question row: [String, "Crs Mean", Number]
             if (currentCourse && row.length >= 3 && typeof row[0] === 'string' && row[1] === "Crs Mean") {
                 const rawQuestion = row[0].trim();
-                const meanScore = parseFloat(row[2]) || 0;
+                const meanScore = parseFloat(row[2]);
+
+                if (isNaN(meanScore)) continue;
 
                 let formattedQuestion = rawQuestion;
                 const isHighlight = HIGHLIGHT_QUESTIONS.some(q => rawQuestion.includes(q));
@@ -58,12 +54,9 @@ export function parseExcel(dataBuffer) {
                 currentCourse.questions.push({
                     questionText: formattedQuestion,
                     mean: meanScore.toFixed(2),
-                    responses: "N/A" // This format doesn't seem to have response counts in the same row
+                    responses: "N/A"
                 });
             }
-            
-            // Note: We are ignoring Dept/School/Univ means for now as per the simple requirement,
-            // but we could capture them if needed.
         }
 
         return { evaluations };
@@ -72,4 +65,4 @@ export function parseExcel(dataBuffer) {
         console.error("Error parsing Hierarchical Excel:", error);
         throw error;
     }
-}
+};

@@ -1,12 +1,4 @@
-// Main App Logic
-
-import { parseExcel as defaultParser } from './parsers/default.js';
-import { parseExcel as hierarchicalParser } from './parsers/hierarchical.js';
-
-const PARSERS = {
-    'default': defaultParser,
-    'hierarchical': hierarchicalParser
-};
+// Main App Logic (Non-Module Version)
 
 document.addEventListener('DOMContentLoaded', () => {
     const fileInput = document.getElementById('excel-upload');
@@ -45,9 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Read file as ArrayBuffer
             const buffer = await readFileAsArrayBuffer(file);
             
-            // Get selected parser
+            // Get selected parser from global window.Parsers
             const parserKey = parserSelect.value;
-            const parseFn = PARSERS[parserKey];
+            const parseFn = window.Parsers[parserKey];
             
             if (!parseFn) {
                 throw new Error(`Parser '${parserKey}' is not implemented.`);
@@ -83,10 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
         navigator.clipboard.writeText(html).then(() => {
             const originalText = copyBtn.textContent;
             copyBtn.textContent = 'Copied!';
-            copyBtn.classList.add('success');
             setTimeout(() => {
                 copyBtn.textContent = originalText;
-                copyBtn.classList.remove('success');
             }, 2000);
         }).catch(err => {
             console.error('Could not copy text: ', err);
@@ -107,7 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
     generateBtn.addEventListener('click', handleGenerate);
     copyBtn.addEventListener('click', handleCopy);
     
-    // Auto-clear error and hide copy button when a new file or format is picked
     fileInput.addEventListener('change', () => {
         clearError();
         copyBtn.classList.add('hidden');
