@@ -35,7 +35,7 @@
             <div class="control-group action-group">
                 <div class="options-group">
                     <label class="checkbox-label">
-                        <input type="checkbox" id="compact-toggle"> Compact Summary Table
+                        <input type="checkbox" id="compact-toggle"> Combined Table View
                     </label>
                     <label class="checkbox-label">
                         <input type="checkbox" id="group-semester-toggle"> Group by Semester
@@ -92,26 +92,24 @@
 {{/semesters}}
     </script>
 
-    <!-- Compact Template -->
+    <!-- Compact (Combined) Template -->
     <script id="compact-report-template" type="x-tmpl-mustache">
-# Teaching Evaluation Summary (Compact)
+# Teaching Evaluation Summary (Combined Table)
 
 {{#semesters}}
 {{#isGrouped}}
 ## Term: {{term}}
 {{/isGrouped}}
 
-{{#evaluations}}
-### {{courseName}} ({{term}})
-*Enrollments: {{enrollments}} | Response Rate: {{responseRate}}*
-
-| Question | Crs Mean | Dept Mean | School Mean | Univ Mean |
+| Item | Crs Mean | Dept Mean | School Mean | Univ Mean |
 | :--- | :---: | :---: | :---: | :---: |
+{{#evaluations}}
+| **{{courseName}}** (Enr: {{enrollments}}, RR: {{responseRate}}) | | | | |
 {{#questions}}
 | {{{questionText}}} | {{mean}} | {{deptMean}} | {{schoolMean}} | {{univMean}} |
 {{/questions}}
-
 {{/evaluations}}
+
 ---
 {{/semesters}}
     </script>
