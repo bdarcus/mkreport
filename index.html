@@ -55,17 +55,19 @@
     <script id="annual-report-template" type="x-tmpl-mustache">
 # Teaching Evaluation Summary
 
-**Course Information**
-
 {{#evaluations}}
 ## Course: {{courseName}} ({{term}})
 
+**Metrics**
+*   **Total Enrollments:** {{enrollments}}
+*   **Response Rate:** {{responseRate}}
+
 ### Evaluation Results
 
-| Question | Mean Score | Responses |
-| :--- | :---: | :---: |
+| Question | Crs Mean | Dept Mean | School Mean | Univ Mean |
+| :--- | :---: | :---: | :---: | :---: |
 {{#questions}}
-| {{{questionText}}} | {{mean}} | {{responses}} |
+| {{{questionText}}} | {{mean}} | {{deptMean}} | {{schoolMean}} | {{univMean}} |
 {{/questions}}
 
 ### Qualitative Feedback

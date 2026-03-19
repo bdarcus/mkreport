@@ -46,7 +46,14 @@ window.Parsers.default = function parseExcel(dataBuffer) {
 
             const evalKey = `${courseName}-${term}`;
             if (!evaluationsMap.has(evalKey)) {
-                evaluationsMap.set(evalKey, { courseName, term, questions: [], comments: [] });
+                evaluationsMap.set(evalKey, { 
+                    courseName, 
+                    term, 
+                    questions: [], 
+                    comments: [],
+                    enrollments: "-",
+                    responseRate: responsesCount ? "N/A" : "-"
+                });
             }
 
             const evalData = evaluationsMap.get(evalKey);
@@ -59,7 +66,10 @@ window.Parsers.default = function parseExcel(dataBuffer) {
                 evalData.questions.push({
                     questionText: formattedQuestion,
                     mean: meanScore.toFixed(2),
-                    responses: responsesCount
+                    responses: responsesCount,
+                    deptMean: "-",
+                    schoolMean: "-",
+                    univMean: "-"
                 });
             }
 
