@@ -120,18 +120,46 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function handleCopy() {
-        const html = reportOutput.innerHTML;
-        navigator.clipboard.writeText(html).then(() => {
+    async function handleCopy() {
+        // Copy the HTML but wrap it with minimal CSS to ensure tables look right in Word/Docs
+        const styles = `
+            <style>
+                table { border-collapse: collapse; width: 100%; margin-bottom: 1rem; }
+                th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
+                th { background-color: #f1f3f5; font-weight: 600; }
+                .highlight-question { background-color: #fff3cd; border: 1px solid #ffeeba; padding: 2px 4px; border-radius: 3px; font-weight: bold; color: #856404; }
+                /* Crs Mean column highlighting */
+                td:nth-child(2), th:nth-child(2) { background-color: #fcfcfc; font-weight: 600; border-bottom: 2px solid #2c3e50; }
+            </style>
+        `;
+        const html = styles + reportOutput.innerHTML;
+        const text = reportOutput.innerText;
+
+        try {
+            const htmlBlob = new Blob([html], { type: 'text/html' });
+            const textBlob = new Blob([text], { type: 'text/plain' });
+            
+            const item = new ClipboardItem({
+                'text/html': htmlBlob,
+                'text/plain': textBlob
+            });
+
+            await navigator.clipboard.write([item]);
+            
             const originalText = copyBtn.textContent;
             copyBtn.textContent = 'Copied!';
             setTimeout(() => {
                 copyBtn.textContent = originalText;
             }, 2000);
-        }).catch(err => {
-            console.error('Could not copy text: ', err);
-            alert('Failed to copy text to clipboard.');
-        });
+        } catch (err) {
+            console.error('Could not copy rich text: ', err);
+            try {
+                await navigator.clipboard.writeText(text);
+                alert('Copied as plain text.');
+            } catch (err2) {
+                alert('Failed to copy to clipboard.');
+            }
+        }
     }
 
     function readFileAsArrayBuffer(file) {
